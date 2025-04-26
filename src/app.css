@@ -1,0 +1,48 @@
+:root {
+	--system-ui:
+		Roboto, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+		"Segoe UI Symbol";
+	--submit-color: #004615;
+	--cancel-color: #6f101b;
+	--low-priority-color: #009432;
+	--medium-priority-color: #ff9400;
+	--high-priority-color: #e2162a;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+* {
+	margin: 0;
+	line-height: calc(1em + 0.5rem);
+}
+
+html {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	-webkit-font-smoothing: antialiased;
+	font-family: var(--system-ui);
+	min-height: 100vh;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
