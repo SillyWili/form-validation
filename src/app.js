@@ -1,82 +1,84 @@
 import "./app.css";
 
+// Collect all form elements at the top
 const form = document.querySelector("form");
 const email = document.getElementById("email");
 const emailError = document.querySelector("#email + span.error");
-
 const password = document.getElementById("password");
 const passwordError = document.querySelector("#password + span.error");
+const postalCode = document.getElementById("postal-code");
+const postalCodeError = document.querySelector("#postal-code + span.error");
+const country = document.getElementById("country");
 
-email.addEventListener("input", () => {
-	if (email.validity.valid) {
-		emailError.textContent = ""; // Remove the message content
-		emailError.className = "error"; // Removes the `active` class
-	} else {
-		// If there is still an error, show the correct error
-		showEmailError();
-	}
-});
+// Event listeners for email and password
+email.addEventListener("input", validateEmail);
+password.addEventListener("input", validatePassword);
 
-password.addEventListener("input", () => {
-	if (password.validity.valid) {
-		passwordError.textContent = "";
-		passwordError.className = "error";
-	} else {
-		showPasswordError();
-	}
-});
-
+// Form submission handler
 form.addEventListener("submit", (event) => {
-	// if the email field is invalid
+	// Validate all fields on submit
 	if (!email.validity.valid) {
-		// display an appropriate error message
-		showEmailError();
-		// prevent form submission
+		validateEmail();
 		event.preventDefault();
 	}
-	if (!password.validity.valid) {
-		showPasswordError();
 
+	if (!validatePassword()) {
+		event.preventDefault();
+	}
+
+	if (!validatePostalCode()) {
 		event.preventDefault();
 	}
 });
 
-function showEmailError() {
-	if (email.validity.valueMissing) {
-		// If empty
-		emailError.textContent = "You need to enter an email address.";
-	} else if (email.validity.typeMismatch) {
-		// If it's not an email address,
-		emailError.textContent = "Entered value needs to be an email address.";
-	} else if (email.validity.tooShort) {
-		// If the value is too short,
-		emailError.textContent = `Email should be at least ${email.minLength} characters; you entered ${email.value.length}.`;
+// Validation functions
+function validateEmail() {
+	if (email.validity.valid) {
+		emailError.textContent = "";
+		emailError.className = "error";
+		return true;
+	} else {
+		if (email.validity.valueMissing) {
+			emailError.textContent = "You need to enter an email address.";
+		} else if (email.validity.typeMismatch) {
+			emailError.textContent = "Entered value needs to be an email address.";
+		} else if (email.validity.tooShort) {
+			emailError.textContent = `Email should be at least ${email.minLength} characters; you entered ${email.value.length}.`;
+		}
+		emailError.className = "error active";
+		return false;
 	}
-	// Add the `active` class
-	emailError.className = "error active";
 }
 
-function showPasswordError() {
+function validatePassword() {
 	if (password.validity.valueMissing) {
 		passwordError.textContent = "You need to enter a strong password";
-	} else if (validatePassword(password.value) === false) {
-		//* I should create a message for every regex missing, but it's not worth it at this time
+		passwordError.className = "error active";
+		return false;
+	} else if (!checkPasswordStrength(password.value)) {
 		passwordError.textContent =
 			"You need to type a stronger password, must have: 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol (!@#/>?), at least 12 characters";
+		passwordError.className = "error active";
+		return false;
 	} else if (password.validity.tooShort) {
 		passwordError.textContent = `Password should be at least ${password.minLength} characters;`;
+		passwordError.className = "error active";
+		return false;
+	} else {
+		passwordError.textContent = "";
+		passwordError.className = "error";
+		return true;
 	}
-	passwordError.className = "error active";
 }
 
-function validatePassword(password) {
+function checkPasswordStrength(password) {
 	const passwordRegex =
 		/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{8,}$/;
 	return passwordRegex.test(password);
 }
 
-function checkPostalCode() {
-	// For each country, defines the pattern that the postal code has to follow
+function validatePostalCode() {
+	// Postal code validation rules
 	const constraints = {
 		ch: ["^(CH-)?\\d{4}$", "Swiss postal codes must have exactly 4 digits: e.g. CH-1950 or 1950"],
 		fr: ["^(F-)?\\d{5}$", "French postal codes must have exactly 5 digits: e.g. F-75012 or 75012"],
@@ -87,32 +89,36 @@ function checkPostalCode() {
 		],
 	};
 
-	// Read the country id
-	const country = document.getElementById("country").value;
+	// Get current country
+	const selectedCountry = country.value;
 
-	// Get the NPA field
-	const postalCodeField = document.getElementById("postal-code");
-
-	// Build the constraint checker
-	const constraint = new RegExp(constraints[country][0], "");
-	const postalCodeError = document.querySelector("#postal-code + span.error");
-
-	// Check it!
-	if (constraint.test(postalCodeField.value)) {
-		// The postal code follows the constraint, we use the ConstraintAPI to tell it
+	// Check if the country has specific constraints
+	if (!constraints[selectedCountry]) {
 		postalCodeError.textContent = "";
 		postalCodeError.className = "error";
-		postalCodeField.setCustomValidity("");
+		postalCode.setCustomValidity("");
+		return true;
+	}
+
+	// Build the constraint checker
+	const constraint = new RegExp(constraints[selectedCountry][0], "");
+
+	// Check the postal code against the constraint
+	if (constraint.test(postalCode.value)) {
+		postalCodeError.textContent = "";
+		postalCodeError.className = "error";
+		postalCode.setCustomValidity("");
+		return true;
 	} else {
-		// The postal code doesn't follow the constraint, we use the ConstraintAPI to
-		// give a message about the format required for this country
-		postalCodeField.setCustomValidity(constraints[country][1]);
-		postalCodeError.textContent = constraints[country][1];
+		postalCodeError.textContent = constraints[selectedCountry][1];
 		postalCodeError.className = "error active";
+		postalCode.setCustomValidity(constraints[selectedCountry][1]);
+		return false;
 	}
 }
 
+// Initialize event listeners for postal code
 window.onload = () => {
-	document.getElementById("country").onchange = checkPostalCode;
-	document.getElementById("postal-code").oninput = checkPostalCode;
+	country.addEventListener("change", validatePostalCode);
+	postalCode.addEventListener("input", validatePostalCode);
 };
