@@ -5,5 +5,41 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
 	</head>
-	<body></body>
+	<body>
+		<main>
+			<form novalidate>
+				<div id="container">
+					<div>
+						<label for="email">Email: </label>
+						<div>
+							<input type="email" name="email" id="email" required minlength="8" />
+							<span class="error" aria-live="polite"></span>
+						</div>
+						<label for="password">Password:</label>
+						<div>
+							<input type="password" name="password" id="password" minlength="12" required />
+							<span class="error" aria-live="polite"></span>
+						</div>
+					</div>
+					<div>
+						<label for="country">Country:</label>
+						<div>
+							<select id="country">
+								<option value="ch">Switzerland</option>
+								<option value="fr">France</option>
+								<option value="de">Germany</option>
+								<option value="nl">The Netherlands</option>
+							</select>
+						</div>
+						<label for="postal-code">Postal Code:</label>
+						<div>
+							<input type="text" name="postal-code" id="postal-code" required />
+							<span class="error" aria-live="polite"></span>
+						</div>
+					</div>
+					<button>save</button>
+				</div>
+			</form>
+		</main>
+	</body>
 </html>
