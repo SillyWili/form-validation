@@ -56,8 +56,7 @@ function validatePassword() {
 		passwordError.className = "error active";
 		return false;
 	} else if (!checkPasswordStrength(password.value)) {
-		passwordError.textContent =
-			"You need to type a stronger password, must have: 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol (!@#/>?), at least 12 characters";
+		passwordError.textContent = `You need to type a stronger password, must have: 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol (!@#/>?), at least ${password.minLength} characters`;
 		passwordError.className = "error active";
 		return false;
 	} else if (password.validity.tooShort) {
